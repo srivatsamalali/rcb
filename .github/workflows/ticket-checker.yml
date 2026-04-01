@@ -1,0 +1,53 @@
+name: RCB Ticket Checker
+
+on:
+  schedule:
+    # GitHub Actions supports a minimum schedule frequency of every 5 minutes.
+    # To achieve "every second" checks, the Java application will stay alive 
+    # and loop internally every 1 second, while this cron ensures the workflow 
+    # restarts if it crashes or reaches a timeout.
+    - cron: "*/5 * * * *"
+  workflow_dispatch: # Allows manual triggering from the GitHub UI
+
+jobs:
+  run-checker:
+    runs-on: ubuntu-latest
+
+    # Prevent multiple redundant checker processes from piling up
+    concurrency:
+      group: ticket-checker
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Create Config Properties file
+        # Setting the check.interval.seconds to 1 makes the Java program check every second
+        run: |
+          cat <<EOF > config.properties
+          check.interval.seconds=1
+          sender.email=${{ secrets.SENDER_EMAIL }}
+          smtp.app.password=${{ secrets.SMTP_APP_PASSWORD }}
+          receiver.email=${{ secrets.RECEIVER_EMAIL }}
+          EOF
+
+      - name: Build the Application
+        run: mvn clean package -DskipTests
+
+      - name: Install xvfb
+        # xvfb provides a virtual display so Selenium can run a "visible" Chrome browser headlessly.
+        run: sudo apt-get update && sudo apt-get install -y xvfb
+
+      - name: Run RCBTicketChecker
+        # Limits run to 60 minutes to prevent infinite billing, the crontab will kick off a new run shortly after
+        timeout-minutes: 60 
+        run: |
+          xvfb-run --auto-servernum --server-args="-screen 0 1920x1080x24" java -jar target/rcb-ticket-checker-1.0-SNAPSHOT.jar
