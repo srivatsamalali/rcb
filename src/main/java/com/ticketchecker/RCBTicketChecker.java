@@ -59,7 +59,7 @@ public class RCBTicketChecker {
     }
 
     private static void checkTicketsAndAlert(ScheduledExecutorService scheduler, Properties config, WebDriver driver) {
-        LOGGER.info("Checking RCB website for tickets at: " + new java.util.Date());
+        LOGGER.info("Srivatsa is checking RCB website for tickets at: " + new java.util.Date());
         boolean buttonFound = false;
         try {
             if (firstLoad) {

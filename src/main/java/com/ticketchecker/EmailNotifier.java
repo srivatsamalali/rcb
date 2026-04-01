@@ -32,7 +32,7 @@ public class EmailNotifier {
             message.setSubject("URGENT: RCB Match Tickets Available!");
             message.setText("The 'Buy Now' button has been detected on the RCB ticket booking website.\n\n"
                     + "Quickly go to: https://shop.royalchallengers.com/ticket to book your tickets now!\n\n"
-                    + "Automated notification by RCBTicketChecker.");
+                    + "Automated notification by Srivatsa.");
 
             Transport.send(message);
 
