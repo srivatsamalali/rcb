@@ -4,7 +4,9 @@ import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 
+import java.util.Arrays;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 public class EmailNotifier {
 
@@ -25,10 +27,25 @@ public class EmailNotifier {
             }
         });
 
+        if (receiverEmail == null || receiverEmail.trim().isEmpty()) {
+            System.err.println("Receiver email is empty. Set receiver.email in config.properties.");
+            return;
+        }
+
+        String normalizedReceivers = Arrays.stream(receiverEmail.split("[,;]"))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.joining(","));
+
+        if (normalizedReceivers.isEmpty()) {
+            System.err.println("Receiver email is empty after normalization. Provide at least one valid address.");
+            return;
+        }
+
         try {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(senderEmail));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(receiverEmail));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(normalizedReceivers));
             message.setSubject("URGENT: RCB Match Tickets Available!");
             message.setText("The 'Buy Now' button has been detected on the RCB ticket booking website.\n\n"
                     + "Quickly go to: https://shop.royalchallengers.com/ticket to book your tickets now!\n\n"
