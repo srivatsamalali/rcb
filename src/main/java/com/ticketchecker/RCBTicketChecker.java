@@ -75,7 +75,7 @@ public class RCBTicketChecker {
             }
 
             // Wait up to 15 seconds for the BUY NOW button to become visible.
-            String xpath = "//button[contains(translate(normalize-space(.), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'BUY TICKETS') or contains(translate(normalize-space(.), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'BUY NOW') or contains(translate(normalize-space(.), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'SOLD OUT')]";
+            String xpath = "//button[contains(translate(normalize-space(.), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'BUY TICKETS') or contains(translate(normalize-space(.), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'BUY NOW')]";
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
             try {
                 WebElement buyNowButton = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath)));
@@ -93,15 +93,10 @@ public class RCBTicketChecker {
                 String appPassword = config.getProperty("smtp.app.password");
                 String receiverEmail = config.getProperty("receiver.email");
 
-                LOGGER.info("Email configuration: sender='" + senderEmail + "', receiver='" + receiverEmail + "'");
-
-                if (senderEmail == null || senderEmail.trim().isEmpty()
-                        || appPassword == null || appPassword.trim().isEmpty()
-                        || receiverEmail == null || receiverEmail.trim().isEmpty()) {
-                    LOGGER.severe("Email not sent due to missing/blank sender.email, smtp.app.password, or receiver.email in config.properties.");
-                    LOGGER.severe("Please set these values in config.properties or via pipeline secrets.");
+                if (senderEmail == null || appPassword == null || receiverEmail == null) {
+                    LOGGER.warning("Email not sent because sender.email, smtp.app.password, or receiver.email is not configured in config.properties.");
                 } else {
-                    EmailNotifier.sendEmailAlert(senderEmail.trim(), appPassword.trim(), receiverEmail.trim());
+                    EmailNotifier.sendEmailAlert(senderEmail, appPassword, receiverEmail);
                 }
 
                 // stop scheduling; we already found the button
