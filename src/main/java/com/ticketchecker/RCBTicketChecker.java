@@ -10,6 +10,9 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Duration;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -59,7 +62,9 @@ public class RCBTicketChecker {
     }
 
     private static void checkTicketsAndAlert(ScheduledExecutorService scheduler, Properties config, WebDriver driver) {
-        LOGGER.info("Srivatsa is checking RCB website for tickets at: " + new java.util.Date());
+        ZonedDateTime nowIst = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));
+        String formattedIst = nowIst.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z"));
+        LOGGER.info("Srivatsa is checking RCB website for tickets at: " + formattedIst);
         boolean buttonFound = false;
         try {
             if (firstLoad) {
@@ -70,7 +75,7 @@ public class RCBTicketChecker {
             }
 
             // Wait up to 15 seconds for the BUY NOW button to become visible.
-            String xpath = "//button[contains(translate(normalize-space(.), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'BUY TICKETS') or contains(translate(normalize-space(.), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'BUY NOW')]";
+            String xpath = "//button[contains(translate(normalize-space(.), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'BUY TICKETS') or contains(translate(normalize-space(.), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'BUY NOW') or contains(translate(normalize-space(.), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'SOLD OUT')]";
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
             try {
                 WebElement buyNowButton = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath)));
