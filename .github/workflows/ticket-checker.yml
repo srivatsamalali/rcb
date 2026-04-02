@@ -32,25 +32,12 @@ jobs:
       - name: Create Config Properties file
         # Setting the check.interval.seconds to 1 makes the Java program check every second
         run: |
-          if [ -z "${{ secrets.SENDER_EMAIL }}" ] || [ -z "${{ secrets.SMTP_APP_PASSWORD }}" ] || [ -z "${{ secrets.RECEIVER_EMAIL }}" ]; then
-            echo "ERROR: One or more SMTP secrets are missing (SENDER_EMAIL, SMTP_APP_PASSWORD, RECEIVER_EMAIL)." >&2
-            exit 1
-          fi
-
-          echo "Using receiver email: ${{ secrets.RECEIVER_EMAIL }}"
           cat <<EOF > config.properties
           check.interval.seconds=1
           sender.email=${{ secrets.SENDER_EMAIL }}
           smtp.app.password=${{ secrets.SMTP_APP_PASSWORD }}
           receiver.email=${{ secrets.RECEIVER_EMAIL }}
           EOF
-
-      - name: Debug effective config
-        run: |
-          echo "--- config.properties (masked) ---"
-          sed -E 's/(smtp.app.password=).*/\1<hidden>/' config.properties
-          sed -n '1,20p' config.properties
-          echo "-------------------------------"
 
       - name: Build the Application
         run: mvn clean package -DskipTests
