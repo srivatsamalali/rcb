@@ -93,10 +93,15 @@ public class RCBTicketChecker {
                 String appPassword = config.getProperty("smtp.app.password");
                 String receiverEmail = config.getProperty("receiver.email");
 
-                if (senderEmail == null || appPassword == null || receiverEmail == null) {
-                    LOGGER.warning("Email not sent because sender.email, smtp.app.password, or receiver.email is not configured in config.properties.");
+                LOGGER.info("Email configuration: sender='" + senderEmail + "', receiver='" + receiverEmail + "'");
+
+                if (senderEmail == null || senderEmail.trim().isEmpty()
+                        || appPassword == null || appPassword.trim().isEmpty()
+                        || receiverEmail == null || receiverEmail.trim().isEmpty()) {
+                    LOGGER.severe("Email not sent due to missing/blank sender.email, smtp.app.password, or receiver.email in config.properties.");
+                    LOGGER.severe("Please set these values in config.properties or via pipeline secrets.");
                 } else {
-                    EmailNotifier.sendEmailAlert(senderEmail, appPassword, receiverEmail);
+                    EmailNotifier.sendEmailAlert(senderEmail.trim(), appPassword.trim(), receiverEmail.trim());
                 }
 
                 // stop scheduling; we already found the button
