@@ -75,7 +75,7 @@ public class RCBTicketChecker {
             }
 
             // Wait up to 15 seconds for the BUY NOW button to become visible.
-            String xpath = "//button[contains(translate(normalize-space(.), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'BUY TICKETS') or contains(translate(normalize-space(.), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'BUY NOW')]";
+            String xpath = "//button[contains(translate(normalize-space(.), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'BUY TICKETS') or contains(translate(normalize-space(.), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 'SOLD OUT')]";
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
             try {
                 WebElement buyNowButton = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath)));
