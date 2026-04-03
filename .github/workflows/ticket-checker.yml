@@ -34,9 +34,9 @@ jobs:
         run: |
           cat <<EOF > config.properties
           check.interval.seconds=1
-          sender.email=${{ secrets.sender.email }}
-          smtp.app.password=${{ secrets.smtp.app.password }}
-          receiver.email=${{ secrets.receiver.email }}
+          sender.email=${{ secrets.sender_email }}
+          smtp.app.password=${{ secrets.smtp_app_password }}
+          receiver.email=${{ secrets.receiver_email }}
           EOF
 
       - name: Build the Application
